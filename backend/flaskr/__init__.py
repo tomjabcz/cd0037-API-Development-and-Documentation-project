@@ -3,8 +3,9 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-
+from sqlalchemy import or_
 from models import setup_db, Question, Category
+import json
 
 QUESTIONS_PER_PAGE = 10
 
@@ -70,7 +71,7 @@ def create_app(test_config=None):
         
 
     """
-    @TODO:
+    DONE @TODO:
     Create an endpoint to handle GET requests for questions,
     including pagination (every 10 questions).
     This endpoint should return a list of questions,
@@ -133,6 +134,31 @@ def create_app(test_config=None):
     Try using the word "title" to start.
     """
 
+    @app.route("/questions", methods=["POST"])
+    def search_questions():
+        body = request.get_json()
+
+        if 'searchTerm' in body:
+            search_term = body["searchTerm"]
+            selection = Question.query.filter(or_(Question.question.ilike(f'%{search_term}%'),Question.answer.ilike(f'%{search_term}%'))).all()
+            formatted_selection = [question.format() for question in selection]
+            
+            vystup =  jsonify(
+                {
+                    "questions": formatted_selection,
+                    "totalQuestions": len(selection),
+                    "currentCategory": "History"
+
+                }
+            )
+            return vystup
+
+        else:
+            print (body,"zapisuju novou question")
+            return ("zapisuju novou question")
+
+
+
     """
     @TODO:
     Create a GET endpoint to get questions based on category.
@@ -141,6 +167,26 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that
     category to be shown.
     """
+    @app.route("/categories/<int:category_id>/questions")
+    def retrieve_questions_by_id(category_id):
+        
+        selection = Question.query.filter(Question.category == category_id).all()
+        #current_questions = paginate_questions(request, selection)
+        questions = [question.format() for question in selection]
+         
+        category = Category.query.filter(Category.id == category_id).one_or_none().format()
+              
+        return jsonify(
+            {
+                "questions": questions,
+                "totalQuestions": len(selection),
+                "currentCategory": category['type']
+
+            }
+        )
+
+
+
 
     """
     @TODO:
