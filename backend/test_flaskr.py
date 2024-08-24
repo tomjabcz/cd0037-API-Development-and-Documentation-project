@@ -13,8 +13,18 @@ class TriviaTestCase(unittest.TestCase):
     def setUp(self):
         """Define test variables and initialize app."""
         self.database_name = "trivia_test"
-        self.database_path = "postgres://{}/{}".format('student:student@localhost:5432', self.database_name)
+        #self.database_path = "postgres://{}/{}".format('student:student@localhost:5432', self.database_name)
         
+        self.database_path = "postgresql://{}:{}@{}:{}/{}".format(
+            os.getenv('DB_USER', 'student'),
+            os.getenv('DB_PASSWORD', 'student'),
+            os.getenv('DB_HOST', 'localhost'),
+            os.getenv('DB_PORT', '5432'),
+            self.database_name
+        )
+
+
+
         self.app = create_app({
             "SQLALCHEMY_DATABASE_URI": self.database_path
         })
@@ -179,6 +189,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(len(data["question"]), 5)
         self.assertTrue(data["question"])
         
+    def test_quizzes_id1_no_more_questions(self):
+        res = self.client().post("/quizzes", json={'previous_questions': [20, 21, 22], "quiz_category":{"type":"Science","id":1}})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(data["question"]), 0)
+        self.assertEqual(data["question"],"")
 
     
     def test_quizzes_ALL_empty(self):
@@ -188,7 +204,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(len(data["question"]), 5)
         self.assertTrue(data["question"])
 
-
+    def test_quizzes_wrong_category_empty(self):
+        res = self.client().post("/quizzes", json={'previous_questions': [], "quiz_category":{"type":"click","id":999}})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        
 
 
 
