@@ -113,7 +113,8 @@ class TriviaTestCase(unittest.TestCase):
         )
         self.assertEqual(data["totalQuestions"],19) 
         self.assertEqual(len(data["questions"]),0)
-
+        
+        
 
     def test_post_question_search(self):
         res = self.client().post("/questions", json={"searchTerm":"title"})
@@ -122,6 +123,8 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["totalQuestions"],2) 
         self.assertEqual(len(data["questions"]),2)
         self.assertTrue(data["currentCategory"])
+        
+                
 
     def test_post_question_search_non_existent(self):
         res = self.client().post("/questions", json={"searchTerm":"title22"})
@@ -130,6 +133,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["totalQuestions"],0) 
         self.assertEqual(len(data["questions"]),0)
         self.assertTrue(data["currentCategory"])
+        
 
     
     def test_post_question_and_delete(self):
@@ -149,12 +153,43 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().delete("/questions/"+str(question_id))
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
-
+        
+    
 
     def test_delete_question_with_wrong_id(self):
         res = self.client().delete("/questions/999")
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
+
+    def test_list_questions_in_a_category(self):
+        res = self.client().get("/categories/1/questions")
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        
+    def test_list_questions_in_a_category_out_of_range(self):
+        res = self.client().get("/categories/999/questions")
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 404)
+
+
+    def test_quizzes_id1_empty(self):
+        res = self.client().post("/quizzes", json={'previous_questions': [], "quiz_category":{"type":"Science","id":"1"}})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(data["question"]), 5)
+        self.assertTrue(data["question"])
+
+    def test_quizzes_ALL_empty(self):
+        res = self.client().post("/quizzes", json={'previous_questions': [], "quiz_category":{"type":"click","id":"0"}})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        print ("test", data)
+        self.assertEqual(len(data["question"]), 5)
+        self.assertTrue(data["question"])
+
+
+
+
 
 
 # Make the tests conveniently executable

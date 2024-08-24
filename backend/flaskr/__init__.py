@@ -208,7 +208,12 @@ def create_app(test_config=None):
     def retrieve_questions_by_id(category_id):
         
         selection = Question.query.filter(Question.category == category_id).all()
-        #current_questions = paginate_questions(request, selection)
+        
+               
+        if len(selection) == 0:
+            abort(404)
+        
+        
         questions = [question.format() for question in selection]
          
         category = Category.query.filter(Category.id == category_id).one_or_none().format()
@@ -251,8 +256,11 @@ def create_app(test_config=None):
             questions = Question.query.filter(Question.category == category).all()
 
         # give question which is not in the previous_questions 
+        
+        print ("pred forem", questions, previous_questions)
         for question in questions:
             if question.id not in previous_questions:
+                print ("mame", question.id, question)
                 break 
         
         # if there are no more questions return empty response
@@ -262,6 +270,7 @@ def create_app(test_config=None):
                     "question": ""
                 }
             )
+        #print (question, question.format())
         
         formatted_question = question.format() 
         
