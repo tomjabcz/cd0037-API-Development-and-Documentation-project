@@ -143,7 +143,7 @@ def create_app(test_config=None):
             selection = Question.query.filter(or_(Question.question.ilike(f'%{search_term}%'),Question.answer.ilike(f'%{search_term}%'))).all()
             formatted_selection = [question.format() for question in selection]
             
-            vystup =  jsonify(
+            output =  jsonify(
                 {
                     "questions": formatted_selection,
                     "totalQuestions": len(selection),
@@ -151,11 +151,20 @@ def create_app(test_config=None):
 
                 }
             )
-            return vystup
+            return output
 
         else:
             print (body,"zapisuju novou question")
-            return ("zapisuju novou question")
+            
+            question = body.get("question", None)
+            answer = body.get("answer", None)
+            difficulty = body.get("difficulty", None)
+            category = body.get("category", None)
+        
+            question = Question(question=question, answer=answer, difficulty=difficulty, category = category)
+            question.insert()
+                           
+            return jsonify (body)
 
 
 
