@@ -129,9 +129,13 @@ Example Response:
 ```
 
 2. `GET /questions`
+
 Description: Retrieves a paginated list of questions, along with the total number of questions, categories, and the current category.
+
 Request Arguments: None
+
 Returns: A JSON object containing a list of questions, total number of questions, all categories, and the current category (fixed as "History").
+
 Example Response:
 
 ```json
@@ -160,9 +164,13 @@ Example Response:
 ```
 
 3. DELETE `/questions/<int:question_id>`
+
 Description: Deletes a specific question by its ID.
+
 Request Arguments: The question_id of the question to be deleted.
+
 Returns: A JSON object indicating success and the ID of the deleted question.
+
 Example Response:
 
 ```json
@@ -173,17 +181,17 @@ Example Response:
 ```
 
 4. `POST /questions`
-Description:
-If a searchTerm is provided in the request body, it searches for questions that contain the search term in either the question or answer.
+
+Description: If a searchTerm is provided in the request body, it searches for questions that contain the search term in either the question or answer.
 If no searchTerm is provided, it adds a new question to the database with the provided details.
-Request Arguments:
-JSON body can include either searchTerm or the details of a new question (question text, answer, difficulty, category).
-Returns:
-If searchTerm is provided: A list of questions matching the search term, along with the total number of such questions and the current category.
+
+Request Arguments: JSON body can include either searchTerm or the details of a new question (question text, answer, difficulty, category).
+
+Returns: If searchTerm is provided: A list of questions matching the search term, along with the total number of such questions and the current category.
 If a new question is added: The details of the newly added question.
+
 Example Response (Search):
 ```json
-
 {
   "questions": [
     {
@@ -212,9 +220,13 @@ Example Response (New Question):
 ```
 
 5. `GET /categories/<int:category_id>/questions`
+
 Description: Retrieves a list of questions for a specific category.
+
 Request Arguments: The category_id of the desired category.
+
 Returns: A JSON object containing a list of questions for the specified category, the total number of such questions, and the current category.
+
 Example Response:
 ```json
 
@@ -235,9 +247,13 @@ Example Response:
 ```
 
 6. `POST /quizzes`
+
 Description: Returns a random question from a specified category that hasn't been asked in the current quiz session.
+
 Request Arguments: JSON body containing quiz_category (with category ID) and previous_questions (a list of question IDs that have been asked in the current session).
+
 Returns: A JSON object containing the next question to be asked in the quiz.
+
 Example Response:
 
 ```json
