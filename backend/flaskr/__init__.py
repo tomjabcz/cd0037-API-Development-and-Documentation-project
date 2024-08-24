@@ -229,6 +229,41 @@ def create_app(test_config=None):
     and shown whether they were correct or not.
     """
 
+    @app.route("/quizzes", methods=["POST"])
+    def give_question():
+        
+        body = request.get_json()
+        previous_questions = body["previous_questions"] 
+        category = body["quiz_category"]["id"]
+
+        # if category == ALL, do not filter
+        if category == 0:
+            questions = Question.query.all()
+        else:
+            questions = Question.query.filter(Question.category == category).all()
+
+        # give question which is not in the previous_questions 
+        for question in questions:
+            if question.id not in previous_questions:
+                break 
+        
+        # if there are no more questions return empty response
+        if len(previous_questions) > 0 and previous_questions[-1] == question.id:
+            return jsonify(
+                {
+                    "question": ""
+                }
+            )
+        
+        formatted_question = question.format() 
+        
+        return jsonify(
+            {
+                "question": formatted_question
+            }
+        )
+
+
     """
     @TODO:
     Create error handlers for all expected errors
