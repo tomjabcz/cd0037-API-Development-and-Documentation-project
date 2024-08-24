@@ -106,9 +106,13 @@ python test_flaskr.py
 ## APIs documentation
 
 1. `GET /categories`
+
 Description: Retrieves a dictionary of all available categories.
+
 Request Arguments: None
+
 Returns: A JSON object with a single key categories, which contains an object of id: category_string key-value pairs.
+
 Example Response:
 
 ```json
