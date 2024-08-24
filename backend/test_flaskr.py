@@ -47,7 +47,7 @@ class TriviaTestCase(unittest.TestCase):
             }
         )
         
-    def test_404_get_categories_with_id(self):
+    def test_404_get_categories_with_wrong_id(self):
         res = self.client().get("/categories/1")
         data = json.loads(res.data)
 
@@ -59,6 +59,102 @@ class TriviaTestCase(unittest.TestCase):
                 "success": False
             }
         )
+
+
+    def test_get_questions(self):
+        res = self.client().get("/questions")
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["categories"], 
+            { 
+                '1' : "Science",
+                '2' : "Art",
+                '3' : "Geography",
+                '4' : "History",
+                '5' : "Entertainment",
+                '6' : "Sports" 
+            }
+        )
+        self.assertEqual(data["totalQuestions"],19) 
+        self.assertEqual(len(data["questions"]),10) 
+ 
+
+    def test_get_questions_paginate(self):
+        res = self.client().get("/questions?page=1")
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["categories"], 
+            { 
+                '1' : "Science",
+                '2' : "Art",
+                '3' : "Geography",
+                '4' : "History",
+                '5' : "Entertainment",
+                '6' : "Sports" 
+            }
+        )
+        self.assertEqual(data["totalQuestions"],19) 
+        self.assertEqual(len(data["questions"]),10)
+
+
+    def test_get_questions_paginate_out_of_range(self):
+        res = self.client().get("/questions?page=999")
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["categories"], 
+            { 
+                '1' : "Science",
+                '2' : "Art",
+                '3' : "Geography",
+                '4' : "History",
+                '5' : "Entertainment",
+                '6' : "Sports" 
+            }
+        )
+        self.assertEqual(data["totalQuestions"],19) 
+        self.assertEqual(len(data["questions"]),0)
+
+
+    def test_post_question_search(self):
+        res = self.client().post("/questions", json={"searchTerm":"title"})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["totalQuestions"],2) 
+        self.assertEqual(len(data["questions"]),2)
+        self.assertTrue(data["currentCategory"])
+
+    def test_post_question_search_non_existent(self):
+        res = self.client().post("/questions", json={"searchTerm":"title22"})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["totalQuestions"],0) 
+        self.assertEqual(len(data["questions"]),0)
+        self.assertTrue(data["currentCategory"])
+
+    
+    def test_post_question_and_delete(self):
+        # add new question
+        res = self.client().post("/questions", json={"question":"test question","answer":"test answer","difficulty":1,"category":1})
+        data = json.loads(res.data)
+        question_id = data["question_id"]
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["question"],"test question")
+        self.assertEqual(data["answer"], "test answer")
+        self.assertTrue(data["question_id"])
+        # delete new question
+        res = self.client().delete("/questions/"+str(question_id))
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        # confirm deletion
+        res = self.client().delete("/questions/"+str(question_id))
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 404)
+
+
+    def test_delete_question_with_wrong_id(self):
+        res = self.client().delete("/questions/999")
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 404)
 
 
 # Make the tests conveniently executable
