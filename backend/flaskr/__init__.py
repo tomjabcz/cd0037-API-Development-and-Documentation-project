@@ -257,28 +257,21 @@ def create_app(test_config=None):
 
         # give question which is not in the previous_questions 
         
-        print ("pred forem", questions, previous_questions)
-        for question in questions:
-            if question.id not in previous_questions:
-                print ("mame", question.id, question)
+        question = None
+        
+        for q in questions:
+            if q.id not in previous_questions:
+                question = q
                 break 
         
         # if there are no more questions return empty response
-        if len(previous_questions) > 0 and previous_questions[-1] == question.id:
-            return jsonify(
-                {
-                    "question": ""
-                }
-            )
-        #print (question, question.format())
-        
+        if question is None:
+            return jsonify({"question": ""})
+     
+        # otherwise format question and return
         formatted_question = question.format() 
         
-        return jsonify(
-            {
-                "question": formatted_question
-            }
-        )
+        return jsonify({"question": formatted_question})
 
 
     """
