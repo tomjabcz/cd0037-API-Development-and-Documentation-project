@@ -132,9 +132,9 @@ Example Response:
 
 Description: Retrieves a paginated list of questions, along with the total number of questions, categories, and the current category.
 
-Request Arguments: None
+Request Arguments: page=n (eg: /questions?page=1), if not provided it takes automatically first ten.
 
-Returns: A JSON object containing a list of questions, total number of questions, all categories, and the current category (fixed as "History").
+Returns: A JSON object containing a list of questions, total number of questions, all categories, and the current category.
 
 Example Response:
 
@@ -185,7 +185,7 @@ Example Response:
 Description: If a searchTerm is provided in the request body, it searches for questions that contain the search term in either the question or answer.
 If no searchTerm is provided, it adds a new question to the database with the provided details.
 
-Request Arguments: JSON body can include either searchTerm or the details of a new question (question text, answer, difficulty, category).
+Request Arguments: JSON body can include either searchTerm (eg: {"searchTerm":"title"}) or the details of a new question (eg: {"question":"How old is my dad.","answer":"120 years","difficulty":1,"category":1}).
 
 Returns: If searchTerm is provided: A list of questions matching the search term, along with the total number of such questions and the current category.
 If a new question is added: The details of the newly added question.
